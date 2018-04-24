@@ -1,0 +1,34 @@
+Notes to keep on how well using the stack goes.
+
+following steps to test git-lfs install, I keep getting:
+Username for 'https://s3.amazonaws.com':
+Password for 'https://s3.amazonaws.com':
+
+I can just hit enter and it works, but what a pain in the ass
+
+
+updating my credential helper from osxkeychain
+used command:
+git config --global credential.helper /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret
+
+nope, that didn't work
+
+try setting batch=true in the ~/.gitconfig
+nope, that didn't do anything
+
+looks like adding:
+[credential "https://s3.amazonaws.com"]
+    helper = store
+
+did the trick. Mother fuck, what a pain.
+
+> put in PR to update doc
+
+(ok, forgot to setup and that was a pain. )
+
+OK. Ran through the Part 1 and set up my butler. in: /Users/yoachim/Scratch/Stack_Learn
+
+
+
+
+
