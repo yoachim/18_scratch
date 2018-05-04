@@ -29,6 +29,49 @@ did the trick. Mother fuck, what a pain.
 OK. Ran through the Part 1 and set up my butler. in: /Users/yoachim/Scratch/Stack_Learn
 
 
+And Sick pointed out I had an old version of git lfs installed. yeeesh. One problem is that all the errors are hard to debug.
+
+LSST vocabulary that should be lookupable:
+
+rerun:
+raw
+calexp
+SourceTable
+
+
+
+Maybe we could have an IRAF to LSST speak?
+How does processCcd.py know how to do things? Is there a handy interative way to tune up the parameters, al la IRAF? 
+In the docs, I would put in a link to the processCcd documentation. 
+Why isn't this running in parallel? Is there a wrapper for lanching in parallel. Can I do a simple xargs to do each day on it's own using N-processors?
+Why is this thing generating fits files I can't just pop open with ds9?
+Would be nice to know the directory structure this thing is generating.
+Really need to add a note on how long this is expected to run.
+calling the display "mtv" is, um..., kind of ridiculous naming convention.
+
+Would be good to have a labeled image so folks can see saturated, missing, cosmic, etc on the afw.display
+
+ahh, I like that SourceCatalog just prints for me out of the box.
+I'd like it to be easier to reach down to pixel values in .ExposureF objects? Looks like it's two steps?
+
+
+
+We really need an illustrated guide to the reduction pipeline. Maybe start with 2 r-band and 2 i-band. See how they get ISRed, see how they get detection and cr removal etc display the 
+raw, ISR, masks, warped, coadded. (and label with the path of each)
+
+This is not the snappiest of processes. I guess we take data, and someone runs this during the day to see how we're doing?
+
+Can I afw.display the number of images that went into a coadd as colored masks with transparency?
+
+So how do I display a whole tract in ds9?
+
+ok, after some backing up and re-running, I got the forced photometry to run. I'm not sure what happened, and it still looks like the R-band threw some strange errors.
+
+Made it through to the end. I don't understand why my CMD looks different. That's concerning.
+
+
+Looks like butler.getKeys() doesn't work.
+
 
 
 
