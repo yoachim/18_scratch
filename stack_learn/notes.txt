@@ -73,5 +73,18 @@ Made it through to the end. I don't understand why my CMD looks different. That'
 Looks like butler.getKeys() doesn't work.
 
 
+----------------------
+
+OK, looks like I'm going to want to run jointcal!
+
+jointcal.py DATA --rerun coaddPhot:jointOut --config cal_ref_cat=ps1_pv3_3pi_20170110
+
+Doesn't run on processCcd. Guess it needs the coadd info. 
+needs a "cal_ref_"
+
+
+handy notebook for looking at the astrometry residuals at: https://github.com/lsst/jointcal/blob/master/notebooks/CheckSimAstrom.ipynb
+
+
 
 
