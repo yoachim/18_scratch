@@ -77,7 +77,25 @@ Looks like butler.getKeys() doesn't work.
 
 OK, looks like I'm going to want to run jointcal!
 
-jointcal.py DATA --rerun coaddPhot:jointOut --config cal_ref_cat=ps1_pv3_3pi_20170110
+This works, after cargo-culting some config stuff:
+jointcal.py DATA --rerun coaddPhot:jointOut --configfile join_config.py --id filter=HSC-I
+looks like:
+jointcal.py DATA --rerun coaddPhot:jointOut --configfile join_config.py --id
+does both filters (probably independantly?) 
+
+join_config.py:
+from lsst.utils import getPackageDir
+from lsst.meas.algorithms import LoadIndexedReferenceObjectsTask
+import os
+
+for refObjLoader in (config.astrometryRefObjLoader,
+                     config.photometryRefObjLoader):
+    refObjLoader.retarget(LoadIndexedReferenceObjectsTask)
+    refObjLoader.load(os.path.join(getPackageDir("obs_subaru"), "config", "filterMap.py"))
+    refObjLoader.ref_dataset_name = "ps1_pv3_3pi_20170110"
+
+
+
 
 Doesn't run on processCcd. Guess it needs the coadd info. 
 needs a "cal_ref_"
@@ -85,6 +103,8 @@ needs a "cal_ref_"
 
 handy notebook for looking at the astrometry residuals at: https://github.com/lsst/jointcal/blob/master/notebooks/CheckSimAstrom.ipynb
 
+---------------
 
+Next up, see if I can load a bunch of catalogs, match the objects (?), and see how they look with old and new wcs.
 
 
