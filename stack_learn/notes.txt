@@ -106,5 +106,7 @@ handy notebook for looking at the astrometry residuals at: https://github.com/ls
 ---------------
 
 Next up, see if I can load a bunch of catalogs, match the objects (?), and see how they look with old and new wcs.
+Ah, jointcal should have a command to update the WCS.
+
 
 
