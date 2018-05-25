@@ -81,7 +81,7 @@ if __name__ == '__main__':
     observatory = Speed_observatory(nside=nside, mjd_start=59853.)
     observatory, scheduler, observations = fs.sim_runner(observatory, scheduler,
                                                          survey_length=survey_length,
-                                                         filename='my_baseline_%iyrs.db' % years,
+                                                         filename='my_baseline_newSpeed%iyrs.db' % years,
                                                          delete_past=True)
 
 # real    1751m55.325s = 29 hours

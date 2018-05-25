@@ -128,9 +128,8 @@ def run_cadence(outDir, dbname):
 
 
 if __name__ == '__main__':
-    #run_glance('baseline_0', 'my_baseline__0yrs.db')
-    run_glance('repo_0', 'from_repo__0yrs.db')
-
-
-
-
+    # run_glance('baseline_0', 'my_baseline__0yrs.db')
+    # run_glance('repo_0', 'from_repo__0yrs.db')
+    #run_glance('repo_1', 'from_repo_1yrs.db')
+    #run_glance('baseline_1', 'my_baseline_1yrs.db')
+    run_glance('baseline_newSpeed1', 'my_baseline_newSpeed1yrs.db')
