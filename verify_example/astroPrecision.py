@@ -81,9 +81,9 @@ def delta_coords(ra, dec, mjds):
     delta_dec : array
         The offsets in the dec direction (degrees)
     """
-    star_fixed = SkyCoord(ra, dec, frame='icrs')
+    star_fixed = SkyCoord(ra*u.deg, dec*u.deg, frame='icrs')
     # Using a star at 1 pc distance. This value cancels out, could use anything.
-    star_near = SkyCoord(ra, dec, frame='icrs', distance=1.*u.pc)
+    star_near = SkyCoord(ra*u.deg, dec*u.deg, frame='icrs', distance=1.*u.pc)
 
     delta_ra = np.zeros(np.size(mjds), dtype=float)
     delta_dec = np.zeros(np.size(mjds), dtype=float)
@@ -113,9 +113,9 @@ def parallax_precision(ra_center, dec_center, ra_sigma, dec_sigma, mjds):
     dec_center : float
          The Dec of the star (degrees).
     ra_sigma : float or array
-         The uncertainty on each RA centroid (degrees)
+         The uncertainty on each RA centroid (arcsec)
     dec_sigma : float of array
-         The uncertainty on each Dec centroid (degrees). Probably similar
+         The uncertainty on each Dec centroid (arcsec). Probably similar
          to ra_sigma.
     mjds : array
          The Modified Julian Dates of observations (days).
@@ -125,14 +125,14 @@ def parallax_precision(ra_center, dec_center, ra_sigma, dec_sigma, mjds):
     Uncertainty in the parallax amplitude in mas.
     """
     delta_ra, delta_dec = delta_coords(ra_center, dec_center, mjds)
-    pi_ra_uncert = ra_sigma / delta_ra
-    pi_dec_uncert = dec_sigma / delta_dec
+    pi_ra_uncert = ra_sigma / (delta_ra * 3600.)
+    pi_dec_uncert = dec_sigma / (delta_dec * 3600.)
 
     sigma_ra = np.sqrt(1./np.sum((1./(pi_ra_uncert**2))))
     sigma_dec = np.sqrt(1./np.sum((1./pi_dec_uncert**2)))
     final_sigma = np.sqrt(1./(1./sigma_ra**2+1./sigma_dec**2))
 
-    return final_sigma/1e3
+    return final_sigma * 1e3
 
 
 def proper_motion_precision(mjds, centroid_error):
@@ -144,11 +144,11 @@ def proper_motion_precision(mjds, centroid_error):
     mjds : array
         The Modified Julian Dates of the observations (days)
     centroid_error : float of array
-        The RMS uncertainty on each centroid (RA or Dec direction). (degrees)
+        The RMS uncertainty on each centroid (RA or Dec direction). (arcsec)
 
     Return
     ------
-    Uncertainty on the fitted proper motion (mas)
+    Uncertainty on the fitted proper motion (mas/yr)
     """
     # If we are assuming one centroid error for all observations
     if np.size(centroid_error) == 1:
@@ -157,5 +157,5 @@ def proper_motion_precision(mjds, centroid_error):
         centroid_errors = centroid_error
     pm_uncert = sigma_slope(mjds, centroid_errors)
 
-    return pm_uncert/1e3
+    return pm_uncert * 1e3 * 365.25
 
