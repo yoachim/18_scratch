@@ -33,7 +33,6 @@ scripted_obs['exptime'] = 30.
 scripted_obs['nexp'] = 2
 # Add a note so it's easy to see if they fire
 scripted_obs['note'] = 'scripted_tier1'
-
 ssurvey.set_script(scripted_obs)
 
 scripted_surveys = [ssurvey]
