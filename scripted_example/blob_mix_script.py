@@ -4,6 +4,7 @@ from lsst.sims.speedObservatory import Speed_observatory
 import matplotlib.pylab as plt
 import healpy as hp
 import time
+from new_script_survey import Scripted_survey
 
 t0 = time.time()
 
@@ -18,25 +19,24 @@ norm_factor = fs.calc_norm_factor(target_map)
 surveys = []
 
 # Let's set up a scripted observation that will just interupt whenever
+mjd0 = 59583.060669
 
-ssurvey = fs.Scripted_survey([], [])
+ssurvey = Scripted_survey(mjd0, 10.)
 for_type = fs.empty_observation()
 scripted_obs = np.zeros(20, dtype=for_type.dtype)
-mjd0 = 59583.060669
+
 scripted_obs['filter'] = 'r'
 # Take a strip of declination at constant RA.
 scripted_obs['RA'] = np.radians(53.)  # radians
 scripted_obs['dec'] = np.radians(-np.arange(20)*2. - 20.)
 # Assume about 37 seconds per visit
-scripted_obs['mjd'] = (np.arange(20)*37.)/3600./24. + mjd0
+scripted_obs['mjd'] = (np.arange(20)*36.)/3600./24. + mjd0
 scripted_obs['exptime'] = 30.
 scripted_obs['nexp'] = 2
 # Add a note so it's easy to see if they fire
 scripted_obs['note'] = 'scripted_tier1'
 ssurvey.set_script(scripted_obs)
-
 scripted_surveys = [ssurvey]
-
 
 # Set up observations to be taken in blocks
 filter1s = ['u', 'g', 'r', 'i', 'z', 'y']
