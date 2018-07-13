@@ -5,9 +5,11 @@ import matplotlib.pylab as plt
 import healpy as hp
 import time
 
+# Let's add a zenith mask to see if that brings the slewtime down
+
 t0 = time.time()
 
-survey_length = 90. #365.25*10  # days
+survey_length = 365.25*10  # days
 nside = fs.set_default_nside(nside=32)
 # Define what we want the final visit ratio map to look like
 years = np.round(survey_length/365.25)
@@ -37,7 +39,7 @@ for filtername, filtername2 in zip(filter1s, filter2s):
                                                 norm_factor=norm_factor))
     bfs.append(fs.Slewtime_basis_function(filtername=filtername, nside=nside))
     bfs.append(fs.Strict_filter_basis_function(filtername=filtername))
-    bfs.append(fs.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=90.))
+    bfs.append(fs.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=60., max_alt=76.))
     weights = np.array([3.0, 3.0, .3, .3, 3., 3., 0.])
     if filtername2 is None:
         # Need to scale weights up so filter balancing still works properly.
@@ -72,8 +74,8 @@ for filtername in filters:
     bfs.append(fs.North_south_patch_basis_function(zenith_min_alt=50., nside=nside))
     bfs.append(fs.Slewtime_basis_function(filtername=filtername, nside=nside))
     bfs.append(fs.Strict_filter_basis_function(filtername=filtername))
-
-    weights = np.array([3.0, 0.3, 1., 3., 3.])
+    bfs.append(fs.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=60., max_alt=76.))
+    weights = np.array([3.0, 0.3, 1., 3., 3., 0.])
     # Might want to try ignoring DD observations here, so the DD area gets covered normally--DONE
     surveys.append(fs.Greedy_survey_fields(bfs, weights, block_size=1, filtername=filtername,
                                            dither=True, nside=nside, ignore_obs='DD'))
@@ -93,7 +95,7 @@ scheduler = fs.Core_scheduler(survey_list_o_lists, nside=nside)
 observatory = Speed_observatory(nside=nside, quickTest=True)
 observatory, scheduler, observations = fs.sim_runner(observatory, scheduler,
                                                      survey_length=survey_length,
-                                                     filename='blobs_same_%iyrs.db' % years,
+                                                     filename='blobs_same_zmask%iyrs.db' % years,
                                                      delete_past=True, n_visit_limit=n_visit_limit)
 t1 = time.time()
 delta_t = t1-t0
