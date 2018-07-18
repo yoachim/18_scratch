@@ -34,6 +34,7 @@ class N_observations_mod(BaseSurveyFeature):
         self.filtername = filtername
         self.mjd0 = mjd0
         self.offset = offset
+        self.mod_year = mod_year
 
     def add_observation(self, observation, indx=None):
         """
@@ -99,21 +100,21 @@ class Target_map_modulo_basis_function(Base_basis_function):
 
         self.norm_factor = norm_factor
         if survey_features is None:
-            self.survey_features = {}
+            survey_features = {}
             # Map of the number of observations in filter
-            self.survey_features['N_obs'] = features.N_observations_mod(filtername=filtername,
+            survey_features['N_obs'] = N_observations_mod(filtername=filtername,
                                                                         mod_year=mod_year,
-                                                                        offet=offset,
+                                                                        offset=offset,
                                                                         mjd0=mjd0, nside=nside)
             # Count of all the observations
-            self.survey_features['N_obs_count_all'] = features.N_obs_count_mod(filtername=None,
+            survey_features['N_obs_count_all'] = N_obs_count_mod(filtername=None,
                                                                                mod_year=mod_year,
                                                                                offset=offset,
                                                                                mjd0=mjd0)
         if condition_features is None:
-            self.condition_features = {}
-            self.condition_features['Current_mjd'] = features.Current_mjd()
-        super(Target_map_modulo_basis_function, self).__init__(survey_features=self.survey_features,
+            condition_features = {}
+            condition_features['Current_mjd'] = features.Current_mjd()
+        super(Target_map_modulo_basis_function, self).__init__(survey_features=survey_features,
                                                                condition_features=condition_features)
         self.nside = nside
         if target_map is None:
@@ -138,10 +139,8 @@ class Target_map_modulo_basis_function(Base_basis_function):
         """
 
         # Check if the current year is one we should be calculating for
-        year = (np.floor(self.condition_features['Current_mjd'].feature - self.mjd0)/365.25)
-        if (year + self.offset) % self.mod_year != 0:
-            result = 0
-        else:
+        year = np.floor((self.condition_features['Current_mjd'].feature - self.mjd0)/365.25)
+        if (year + self.offset) % self.mod_year == 0:
             result = np.zeros(hp.nside2npix(self.nside), dtype=float)
             if indx is None:
                 indx = np.arange(result.size)
@@ -151,5 +150,7 @@ class Target_map_modulo_basis_function(Base_basis_function):
 
             result[indx] = goal_N - self.survey_features['N_obs'].feature[indx]
             result[self.out_of_bounds_area] = self.out_of_bounds_val
+        else:
+            result = 0
 
         return result
