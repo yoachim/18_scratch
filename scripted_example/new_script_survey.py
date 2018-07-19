@@ -13,11 +13,15 @@ class Scripted_survey(BaseSurvey):
                  smoothing_kernel=None, reward=1e6, ignore_obs='dummy',
                  nside=default_nside):
         """
-        min_alt : float (30.)
-            The minimum altitude to attempt to chace a pair to (degrees). Default of 30 = airmass of 2.
-        max_alt : float(85.)
-            The maximum altitude to attempt to chase a pair to (degrees).
-
+        Parameters
+        ----------
+        mjd_target : float
+            The MJD that the script should be executed at (days). It is up to the
+            user to make sure the target is visible at that time.
+        mjd_tol : float
+            The tolerance on the MJD (minutes).
+        reward : float (1e6)
+            The reward to report if the current MJD is within mjd_tol of mjd_target. 
         """
         if nside is None:
             nside = set_default_nside()
@@ -41,6 +45,7 @@ class Scripted_survey(BaseSurvey):
     def add_observation(self, observation, indx=None, **kwargs):
         """Check if this matches a scripted observation
         """
+        # XXX--TODO: remove observation from list if it got executed
         pass
 
     def calc_reward_function(self):
@@ -67,7 +72,7 @@ class Scripted_survey(BaseSurvey):
         ----------
         obs_wanted : np.array
             The observations that should be executed. Needs to have columns with dtype names:
-            XXX
+            'RA', 'dec', 'filter', 'exptime', 'nexp', 'note', 'field_id'
         mjds : np.array
             The MJDs for the observaitons, should be same length as obs_list
         mjd_tol : float (15.)
