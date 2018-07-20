@@ -102,7 +102,7 @@ for filtername, filtername2 in zip(filter1s, filter2s):
     else:
         survey_name = 'blob, %s%s' % (filtername, filtername2)
     surveys.append(fs.Blob_survey(bfs, weights, filtername=filtername, filter2=filtername2,
-                                  survey_note=survey_name))
+                                  survey_note=survey_name, ignore_obs='DD'))
 
 # Set up the greedy surveys for filling time when can't take pairs.
 filters = ['u', 'g', 'r', 'i', 'z', 'y']
