@@ -10,7 +10,7 @@ from lsst.sims.utils import hpid2RaDec, raDec2Hpid
 
 # Try out the rolling cadence
 
-survey_length = 365.25*10  # days
+survey_length = 20# 365.25*10  # days
 nside = fs.set_default_nside(nside=32)
 years = np.round(survey_length/365.25)
 t0 = time.time()
