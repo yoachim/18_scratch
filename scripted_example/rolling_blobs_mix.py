@@ -9,7 +9,7 @@ from rolling_slair import Target_map_modulo_basis_function
 
 # Try out the rolling cadence
 
-survey_length = 2.2 #365.25*10  # days
+survey_length = 365.25*10  # days
 nside = fs.set_default_nside(nside=32)
 years = np.round(survey_length/365.25)
 t0 = time.time()
