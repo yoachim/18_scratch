@@ -15,12 +15,25 @@ import copy
 default_nside = None
 
 
-def scale_exptime(m5diff, min_exptime, max_exptime):
+def scale_exptime(m5diff, min_exptime, max_exptime, fiducial_time=30.):
     """
     Scale the exposure time given the conditions and desired exposure times
+
+    Parameters
+    ----------
+    m5diff : float
+        The 5-sigma limiting depth difference
+    min_exptime : float
+        Units should match max_exptime. Seconds are good.
+    max_exptime : float
+        The maximum exposure time to use.
+    fiducial_time : float
+        The exposure time assumed for the m5diff value.
+
     """
-    new_times = min_exptime*10.**(m5diff/1.25)
-    
+    new_times = min_exptime*10.**(-m5diff/1.25)
+    new_times = np.clip(new_times, a_min=min_exptime, a_max=max_exptime)
+    return new_times
 
 
 class Vary_expt_survey(Greedy_survey_fields):
@@ -103,7 +116,8 @@ class Vary_expt_survey(Greedy_survey_fields):
                                                tag_names=tag_names,
                                                nside=nside)
         self.nexp = nexp
-
+        self.min_exptime = min_exptime
+        self.max_exptime = max_exptime
         self.slew_approx = slew_approx
         self.read_approx = read_approx
         self.hpids = np.arange(hp.nside2npix(self.nside))
@@ -237,19 +251,25 @@ class Vary_expt_survey(Greedy_survey_fields):
             ufields = ufields[order][::-1]
             m5_filter1_by_field = m5_filter1_by_field[order][::-1]
             # calculate the exposure times that we would want, given the m5 diff values
-            exptime_f1 = 
+            exptime_f1 = scale_exptime(m5_filter1_by_field, self.min_exptime, self.max_exptime)
+            overhead = np.zeros(exptime_f1.size) + self.slew_approx + self.read_approx*(self.nexp-1)
+            elapsed_sec = np.cumsum(exptime_f1 + overhead)
+            max_indx = np.max(np.where(elapsed_sec/60. <= self.block_time))
+            self.exptimes_f1 = exptime_f1[0:max_indx+1]
+
             if self.filter2 is not None:
+                # Now, we're assuming the 5-sigma depth doesn't change much over the pair period.
+                # Obviously, if the moon rises or something, this is ont a good approx
+                # Also, assuming the exptimes will scale similarly between filter1 and filter2.
+                # If that is not the case, may miss target block time by a lot. 
                 ufields, m5_filter2_by_field = int_binned_stat(self.hp2fields[potential_hp],
                                                                self.extra_basis_functions['filter2_m5diff']()[potential_hp],
                                                                statistic=np.mean)
                 m5_filter2_by_field[order][::-1]
+                exptime_f2 = scale_exptime(m5_filter2_by_field, self.min_exptime, self.max_exptime)
+                self.exptimes_f2 = exptime_f2[0:max_indx+1]
 
-            # XXX--todo:  Get a 5-sigma depth for each field. Compute an exposure time
-            # for each field.
-
-
-
-            self.best_fields = ufields
+            self.best_fields = ufields[0:max_indx+1]
         else:
             self.reward = -np.inf
         self.reward_checked = True
@@ -308,7 +328,7 @@ class Vary_expt_survey(Greedy_survey_fields):
             obs['rotSkyPos'] = 0.
             obs['filter'] = self.filtername
             obs['nexp'] = self.nexp
-            obs['exptime'] = self.exptime
+            obs['exptime'] = self.exptimes_f1[indx]
             obs['field_id'] = -1
             if self.tag_fields:
                 obs['survey_id'] = np.unique(self.tag_map[np.where(self.hp2fields == field)])[0]
@@ -316,6 +336,7 @@ class Vary_expt_survey(Greedy_survey_fields):
                 obs['survey_id'] = 1
             obs['note'] = '%s' % (self.survey_note)
             obs['block_id'] = self.counter
+            obs['note'] = '%s, a' % (self.survey_note)
             observations.append(obs)
             counter2 += 1
 
@@ -325,9 +346,11 @@ class Vary_expt_survey(Greedy_survey_fields):
         else:
             # Double the list to get a pair.
             observations_paired = []
-            for observation in observations:
+            for i, observation in enumerate(observations):
                 obs = copy.copy(observation)
                 obs['filter'] = self.filter2
+                obs['exptime'] = self.exptimes_f2[better_order[i]]
+                obs['note'] = '%s, b' % (self.survey_note)
                 observations_paired.append(obs)
 
             # Check loaded filter here to decide which goes first
@@ -335,16 +358,6 @@ class Vary_expt_survey(Greedy_survey_fields):
                 result = observations_paired + observations
             else:
                 result = observations + observations_paired
-
-            # Let's tag which one is supposed to be first/second in the pair:
-            for i in range(0, self.nvisit_block, 1):
-                result[i]['note'] = '%s, a' % (self.survey_note)
-            for i in range(self.nvisit_block, self.nvisit_block*2, 1):
-                result[i]['note'] = '%s, b' % (self.survey_note)
-
-        # XXX--note, we could run this like the DD surveys and keep the queue locally,
-        # then we can control how to recover if interupted, cut a sequence short if needed, etc.
-        # But that is a lot of code for what should be a minor improvement.
 
         # Keep track of which block we're on. Nice for debugging.
         self.counter += 1
