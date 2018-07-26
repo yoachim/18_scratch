@@ -44,11 +44,11 @@ for filtername, filtername2 in zip(filter1s, filter2s):
     bfs.append(fs.Strict_filter_basis_function(filtername=filtername))
     bfs.append(fs.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=90.))
     # Here's the new one
-    bfs.append(Cadence_enhance_basis_function(nside=nside, apply_area=cadence_area))
-    weights = np.array([3.0, 3.0, .3, .3, 3., 3., 0., 1.])
+    bfs.append(Cadence_enhance_basis_function(nside=nside, apply_area=cadence_area, filtername='gri'))
+    weights = np.array([3.0, 3.0, .3, .3, 3., 3., 0., 3.])
     if filtername2 is None:
         # Need to scale weights up so filter balancing still works properly.
-        weights = np.array([6.0, 0.6, 3., 3., 0., 1.])
+        weights = np.array([6.0, 0.6, 3., 3., 0., 3.])
 
     if filtername2 is None:
         survey_name = 'blob, %s' % filtername
@@ -85,7 +85,7 @@ n_visit_limit = None
 observatory = Speed_observatory(nside=nside, quickTest=True)
 observatory, scheduler, observations = fs.sim_runner(observatory, scheduler,
                                                      survey_length=survey_length,
-                                                     filename='cad_test_%iyrs.db' % years,
+                                                     filename='cad_test_%iyrs_2.db' % years,
                                                      delete_past=True, n_visit_limit=n_visit_limit)
 t1 = time.time()
 delta_t = t1-t0
