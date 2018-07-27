@@ -3,7 +3,7 @@ import astropy
 import lsst.sims.featureScheduler as fs
 from lsst.sims.utils import Site
 import lsst.sims.skybrightness as sb
-
+import sys
 
 # Generate information useful for scheduling the DD fields
 
@@ -74,10 +74,17 @@ decs = [survey.dec for survey in dd_surveys]
 skymags = np.zeros((mjds.size, len(ras)))
 
 print('Computing sky brighntess values')
+imax = float(np.size(mjds))
 for i, mjd in enumerate(mjds):
     skyModel.setRaDecMjd(ras, decs, mjd, degrees=False)
-    skymags[i] = skyModel.returnMags()['g']
-    import pdb ; pdb.set_trace()
+    # look in the model to check if points are good
+    if skyModel.goodPix.size > 0:
+        skymags[i] = skyModel.returnMags()['g']
+
+    progress = i/imax*100
+    text = '\rprogress = %.1f%%' % progress
+    sys.stdout.write(text)
+    sys.stdout.flush()
 
 
 for i, survey in enumerate(dd_surveys):
