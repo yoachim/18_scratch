@@ -4,6 +4,10 @@ import lsst.sims.featureScheduler as fs
 from lsst.sims.utils import Site
 import lsst.sims.skybrightness as sb
 import sys
+import time
+
+
+t0 = time.time()
 
 # Generate information useful for scheduling the DD fields
 
@@ -90,6 +94,7 @@ for i, mjd in enumerate(mjds):
 for i, survey in enumerate(dd_surveys):
     dd_info[survey.survey_name.replace('DD:', '')+'_g_sb'] = skymags[:, i]
 
-
 print('Saving')
 np.savez('dd_info.npz', dd_info=dd_info)
+delta_t = time.time() - t0
+print('genererated grid for %i years in %i minutes' % (length/365.25, delta_t/60.))
