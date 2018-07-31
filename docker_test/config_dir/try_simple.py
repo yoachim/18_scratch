@@ -6,6 +6,7 @@ from lsst.sims.ocs.kernel import Simulator
 from lsst.sims.featureScheduler.driver import FeatureSchedulerDriver as Driver
 from lsst.sims.ocs.setup import create_parser
 from lsst.sims.ocs.setup import apply_file_config, read_file_config
+from lsst.ts.scheduler.kernel import SurveyTopology
 
 from blob_same_zmask import generate_slair_scheduler
 import time
@@ -40,6 +41,16 @@ scheduler = generate_slair_scheduler()
 
 sim.driver.scheduler = scheduler
 sim.driver.sky_nside = scheduler.nside
+
+# WTF is this crap?
+survey_topology = SurveyTopology()
+survey_topology.num_general_props = 1
+survey_topology.general_propos = ["FuckProps"]
+survey_topology.num_seq_props = 1
+survey_topology.sequence_propos = ["ReallyFuckThis"]
+sim.conf_comm.num_proposals = survey_topology.num_props
+sim.conf_comm.survey_topology['general'] = survey_topology.general_propos
+sim.conf_comm.survey_topology['sequence'] = survey_topology.sequence_propos
 
 sim.initialize()
 sim.run()
