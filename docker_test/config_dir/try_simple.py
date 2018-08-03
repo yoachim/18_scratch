@@ -13,6 +13,9 @@ import time
 
 t0 = time.time()
 
+# Need to launch the database manager first with:
+# manage_db --save-dir $HOME/run_local/output/
+
 # Let's try to launch this as a simple script since it died in jupyter
 logging.getLogger().setLevel(logging.INFO)
 logging.basicConfig(level=logging.INFO,
@@ -42,12 +45,12 @@ scheduler = generate_slair_scheduler()
 sim.driver.scheduler = scheduler
 sim.driver.sky_nside = scheduler.nside
 
-# WTF is this crap?
+# WTF is this?
 survey_topology = SurveyTopology()
 survey_topology.num_general_props = 1
-survey_topology.general_propos = ["FuckProps"]
+survey_topology.general_propos = ["dummyProp"]
 survey_topology.num_seq_props = 1
-survey_topology.sequence_propos = ["ReallyFuckThis"]
+survey_topology.sequence_propos = ["reallyDummyProp"]
 sim.conf_comm.num_proposals = survey_topology.num_props
 sim.conf_comm.survey_topology['general'] = survey_topology.general_propos
 sim.conf_comm.survey_topology['sequence'] = survey_topology.sequence_propos
