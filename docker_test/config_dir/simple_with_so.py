@@ -11,7 +11,7 @@ years = np.round(survey_length/365.25)
 nside = fs.set_default_nside(nside=32)
 scheduler = generate_slair_scheduler()
 
-observatory = Speed_observatory(nside=nside, quickTest=True)
+observatory = Speed_observatory(nside=nside, quickTest=False)
 observatory, scheduler, observations = fs.sim_runner(observatory, scheduler,
                                                      survey_length=survey_length,
                                                      filename='blobs_same_zmask%iyrs.db' % years,
