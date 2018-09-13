@@ -9,6 +9,7 @@ docker run -it --rm --name "$1" \
           -v ${config_dir}:/home/opsim/other-configs \
           -v $HOME/.config:/home/opsim/.config \
           -v ${sky_brightness_data_dir}:/home/opsim/repos/sims_skybrightness_pre/data \
+          -v $HOME/gitRepos:/home/opsim/my_repos \
           -e OPSIM_HOSTNAME=${host_name} \
           -e DISPLAY=${host_ip}:0 \
           -p 8888:8888 \
