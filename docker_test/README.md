@@ -4,13 +4,14 @@ Notes on how to run with docker:
 update the container:
 docker pull oboberg/opsim4_fbs_py3:latest
 
-My 1-year run got killed when I gave it only 16GB of memory. Let's try it again with 24.
+# enter the container
+./docker_thingy
 
 # Start up database
 manage_db --save-dir=/home/opsim/run_local/output/
 
 # set to my config:
+declare and setup my scheduler_config repo.
 
-
-# Run:
-opsim4 --frac-duration=1.0
+# Run for a day:
+opsim4 --frac-duration=0.003
