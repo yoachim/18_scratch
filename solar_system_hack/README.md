@@ -11,9 +11,10 @@ Using the neos orbits from sims_movingObjects (neos_100.s3m), using the baseline
 Using my branch of MAF, should be merged to master soon-ish
 
 
+in each new directory:
 
+`movingObjects.py --obsFile baseline2018a__neos_100_obs.txt --opsimRun noNES --orbitFile ../neos_100.s3m`
 
-movingObjects.py --obsFile baseline2018a_neos_100_full_obs.txt --opsimRun baseline2018a --outDir full --orbitFile neos_100.s3m
-
+`movingObjects.py --obsFile baseline2018a__neos_100_obs.txt --opsimRun baseline2018a --orbitFile ../neos_100.s3m`
 
 
